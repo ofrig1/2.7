@@ -6,6 +6,7 @@ client server
 
 import socket
 import logging
+import protocol
 
 MAX_PACKET = 1024
 IP = '127.0.0.1'
@@ -23,26 +24,12 @@ def protocol_client_send(message):
     :param message: message to be sent
     :return: message after protocol
     """
-    message_len = len(message)
-    final_message = str(message_len) + SEPERATOR + message
-    return final_message
-
-
-def protocol_client_receive(my_socket):
-    """
-    receives message with protocol
-    :param my_socket:
-    :return: list with message type and message in it
-    """
-    cur_char = ''
-    message_len = ''
-    while cur_char != SEPERATOR:
-        cur_char = my_socket.recv(1).decode()
-        if cur_char != SEPERATOR:
-            message_len += cur_char
-    message_content = my_socket.recv(int(message_len)).decode()
-    message_parts = message_content.split(SEPERATOR)
-    return message_parts
+    try:
+        message_len = len(message)
+        final_message = str(message_len) + SEPERATOR + message
+        return final_message
+    except Exception as e:
+        return f"Error: {e}. Client message failed to send to server with protocol"
 
 
 def main():
@@ -57,8 +44,9 @@ def main():
         while True:
             msg = input("Enter message: ")
             logging.debug("User input: " + msg)
+            msg = msg.replace(' ', SEPERATOR)
             my_socket.send(protocol_client_send(msg).encode())
-            response = protocol_client_receive(my_socket)
+            response = protocol.protocol_receive(my_socket)
             type1 = response[0]
             if type1 == LIST:
                 response_list = response[1:]

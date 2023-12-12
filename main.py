@@ -10,6 +10,7 @@ import os
 import shutil
 import subprocess
 import pyautogui
+import protocol
 
 IP = '127.0.0.1'
 PORT = 8820
@@ -44,26 +45,7 @@ def protocol_send(message, message_type):
         logging.debug("final msg " + final_message)
         return final_message
     except Exception as e:
-        return f"Error: {e}. Server message failed to send to client"
-
-
-def protocol_receive(my_socket):
-    """
-    Protocol to receive message from client to server
-    :param my_socket:
-    :return: message sent from client
-    """
-    try:
-        cur_char = ''
-        message_len = ''
-        while cur_char != SEPERATOR:
-            cur_char = my_socket.recv(1).decode()
-            # print("char "+cur_char)
-            if cur_char != SEPERATOR:
-                message_len += cur_char
-        return my_socket.recv(int(message_len)).decode()
-    except Exception as e:
-        return f"Error: {e}. Server failed to receive client message"
+        return f"Error: {e}. Server message failed to send to client with protocol"
 
 
 def dir1(directory):
@@ -192,12 +174,10 @@ def handle_msg(client_socket):
     :param client_socket:
     :return:
     """
-
     try:
         while True:
-            request = protocol_receive(client_socket)
-            request_list = request.split()
-            # print("Client sent " + request)
+            request_list = protocol.protocol_receive(client_socket)
+            print("Client sent " + str(request_list))
             if request_list[0] == DIR:
                 if len(request_list) == 2:
                     client_socket.send(protocol_send(dir1(request_list[1]), LIST).encode())
@@ -222,13 +202,13 @@ def handle_msg(client_socket):
                 client_socket.send(protocol_send(take_screenshot(), TEXT).encode())
             elif request_list[0] == SEND_PHOTO:
                 send_photo(client_socket)
-            elif request == EXIT:
+            elif request_list[0] == EXIT:
                 client_socket.send(protocol_send(exit_client(), TEXT).encode())
                 break
             else:
                 random_word(client_socket)
-            logging.debug("Server received " + request)
-            print('server received ' + request)
+            logging.debug("Server received " + str(request_list))
+            print('server received ' + str(request_list))
     except socket.error as err:
         print('received socket error on client socket' + str(err))
     finally:
