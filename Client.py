@@ -44,8 +44,20 @@ def main():
         while True:
             msg = input("Enter message: ")
             logging.debug("User input: " + msg)
-            msg = msg.replace(' ', SEPERATOR)
-            my_socket.send(protocol_client_send(msg).encode())
+
+            final_msg = ''
+            for i in range(len(msg) - 2):
+                char = msg[i]
+                char_after_next = msg[i + 2]
+                if char == ' ' and char_after_next == ':':
+                    final_msg += '|'
+                else:
+                    final_msg += char
+            final_msg += msg[i+1]
+            final_msg += msg[i+2]
+
+            # msg = msg.replace(' ', SEPERATOR)
+            my_socket.send(protocol_client_send(final_msg).encode())
             response = protocol.protocol_receive(my_socket)
             type1 = response[0]
             if type1 == LIST:
