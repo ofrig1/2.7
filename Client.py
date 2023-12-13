@@ -103,7 +103,10 @@ def main():
         print('received socket error ' + str(err))
     finally:
         logging.debug("Closing Client Socket")
-        my_socket.close()
+        try:
+            my_socket.send(protocol_client_send('EXIT').encode())
+        finally:
+            my_socket.close()
 
 
 if __name__ == "__main__":

@@ -237,9 +237,8 @@ def main():
 
 
 if __name__ == "__main__":
-    # assert 0 < rand() <= 10, "Random number not between 1 & 10"
-    # assert name() == "My name is " + PERSON_NAME
-    # assert dir('C:\\work') != "", "return"
+    assert dir1('C:\\work\\cyber') != 'Directory does not exist', "Existing directory shouldn't return an error message"
+    assert delete('C:\\work\\cyber\\nonexistent.txt') == 'File path can not be removed', "Can't delete nonexistent file"
     # assert delete('C:\\work\\jjj.rtf') != "", "return"
     # result = copy('C:\\work\\cyber\\jjj.txt', 'C:\\work\\cyber\\jjj.txt')
     # assert result == "Text could not be copied", ":("
