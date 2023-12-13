@@ -65,6 +65,7 @@ def main():
     my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         my_socket.connect((IP, PORT))
+        print("Enter one of the following commands:\n\rDIR, DELETE, COPY, EXECUTE, TAKE_SCREENSHOT, SEND_PHOTO")
         while True:
             msg = input("Enter message: ")
             logging.debug("User input: " + msg)

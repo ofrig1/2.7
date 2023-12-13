@@ -55,7 +55,10 @@ def dir1(directory):
     :return: str of files in dir separated by SEPERATOR
     """
     try:
-        directory += '\\*.*'
+        if not os.path.exists(directory):
+            print(f"The directory '{directory}' does not exist.")
+            return 'Directory does not exist'
+        directory += os.path.sep + '*.*'
         files_list = glob.glob(directory)
         file_str = ""
         for item in files_list:
@@ -180,7 +183,11 @@ def handle_msg(client_socket):
             print("Client sent " + str(request_list))
             if request_list[0] == DIR:
                 if len(request_list) == 2:
-                    client_socket.send(protocol_send(dir1(request_list[1]), LIST).encode())
+                    dir_response = dir1(request_list[1])
+                    if dir_response == 'Directory does not exist':
+                        client_socket.send(protocol_send(dir_response, ERROR).encode())
+                    else:
+                        client_socket.send(protocol_send(dir1(request_list[1]), LIST).encode())
                 else:
                     client_socket.send(protocol_send('Expecting one argument', ERROR).encode())
             elif request_list[0] == DELETE:
@@ -236,4 +243,5 @@ if __name__ == "__main__":
     # assert delete('C:\\work\\jjj.rtf') != "", "return"
     # result = copy('C:\\work\\cyber\\jjj.txt', 'C:\\work\\cyber\\jjj.txt')
     # assert result == "Text could not be copied", ":("
+    # print(dir1("C:\work\cyber"))
     main()
