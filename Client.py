@@ -56,6 +56,19 @@ def parse_command(user_input):
     return my_string
 
 
+def is_socket_connected(my_socket):
+    try:
+        # Check for errors on the socket
+        error = my_socket.getsockopt(socket.AF_INET, socket.SO_ERROR)
+        if error == 0:
+            return True  # Socket is connected
+        else:
+            return False  # Socket has an error
+    except socket.error as e:
+        print(f"An unexpected error occurred: {e}")
+        return False  # An exception occurred, socket is likely not connected
+
+
 def main():
     """
     Sends messages to server and get responses
@@ -101,10 +114,13 @@ def main():
                 break
     except socket.error as err:
         print('received socket error ' + str(err))
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
     finally:
         logging.debug("Closing Client Socket")
         # try:
-        #    my_socket.send(protocol_client_send('EXIT').encode())
+       # if my_socket is not None and is_socket_connected(my_socket):
+        my_socket.send(protocol_client_send('EXIT').encode())
         # finally:
         my_socket.close()
 

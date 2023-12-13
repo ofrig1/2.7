@@ -218,6 +218,8 @@ def handle_msg(client_socket):
             print('server received ' + str(request_list))
     except socket.error as err:
         print('received socket error on client socket' + str(err))
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
     finally:
         client_socket.close()
         logging.debug("Client Socket Disconnected")
@@ -232,6 +234,8 @@ def main():
         while True:
             client_socket, client_address = server_socket.accept()
             handle_msg(client_socket)
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
     finally:
         server_socket.close()
 
