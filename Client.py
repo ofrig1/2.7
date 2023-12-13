@@ -32,23 +32,28 @@ def protocol_client_send(message):
         return f"Error: {e}. Client message failed to send to server with protocol"
 
 
-def fix_space(msg):
+def parse_command(user_input):
     """
-    Changes relevant spaces to seperator
-    :param msg:
-    :return: Final message after fixing spaces
+    Split message with seperator
+    :param user_input: Message to split with seperator
+    :return: Split message
     """
-    final_msg = ''
-    for i in range(len(msg) - 2):
-        char = msg[i]
-        char_after_next = msg[i + 2]
-        if char == ' ' and char_after_next == ':':
-            final_msg += '|'
+    parts = []
+    current_part = ''
+    inside_quotes = False
+    for char in user_input:
+        if char == ' ' and not inside_quotes:
+            if current_part:
+                parts.append(current_part)
+                current_part = ''
+        elif char == '"' or char == "'":
+            inside_quotes = not inside_quotes
         else:
-            final_msg += char
-    final_msg += msg[i + 1]
-    final_msg += msg[i + 2]
-    return final_msg
+            current_part += char
+    if current_part:
+        parts.append(current_part)
+    my_string = SEPERATOR.join(parts)
+    return my_string
 
 
 def main():
@@ -63,7 +68,7 @@ def main():
         while True:
             msg = input("Enter message: ")
             logging.debug("User input: " + msg)
-            final_msg = fix_space(msg)
+            final_msg = parse_command(msg)
             my_socket.send(protocol_client_send(final_msg).encode())
             response = protocol.protocol_receive(my_socket)
             type1 = response[0]
@@ -80,7 +85,6 @@ def main():
                 if len(response) != 2:
                     print('unexpected response for message type error')
                 else:
-
                     print("error received " + response[1])
             elif type1 == PHOTO:
                 if len(response) != 2:
