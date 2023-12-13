@@ -238,9 +238,16 @@ def main():
 
 if __name__ == "__main__":
     assert dir1('C:\\work\\cyber') != 'Directory does not exist', "Existing directory shouldn't return an error message"
+    # Test case: Try to delete a nonexistent file
     assert delete('C:\\work\\cyber\\nonexistent.txt') == 'File path can not be removed', "Can't delete nonexistent file"
-    # assert delete('C:\\work\\jjj.rtf') != "", "return"
-    # result = copy('C:\\work\\cyber\\jjj.txt', 'C:\\work\\cyber\\jjj.txt')
-    # assert result == "Text could not be copied", ":("
-    # print(dir1("C:\work\cyber"))
+    # Test case: Try to execute a nonexistent application
+    assert execute('no.exe') == "Error: [WinError 2] The system cannot find the file specified. App could not be opened"
+    # Test case: Create a test file and copy it
+    test_file_path = 'C:\\work\\cyber\\test_file.txt'
+    with open(test_file_path, 'w') as test_file:
+        test_file.write("This is a test file.")
+    copy_test = copy(test_file_path, 'C:\\work\\cyber\\copy_file.txt')
+    assert copy_test == 'Content of C:\\work\\cyber\\test_file.txt copied to C:\\work\\cyber\\copy_file.txt'
+    # Test case: Delete the copied file
+    delete_result = delete('C:\\work\\cyber\\copy_file.txt')
     main()
