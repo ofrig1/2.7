@@ -32,6 +32,25 @@ def protocol_client_send(message):
         return f"Error: {e}. Client message failed to send to server with protocol"
 
 
+def fix_space(msg):
+    """
+    Changes relevant spaces to seperator
+    :param msg:
+    :return: Final message after fixing spaces
+    """
+    final_msg = ''
+    for i in range(len(msg) - 2):
+        char = msg[i]
+        char_after_next = msg[i + 2]
+        if char == ' ' and char_after_next == ':':
+            final_msg += '|'
+        else:
+            final_msg += char
+    final_msg += msg[i + 1]
+    final_msg += msg[i + 2]
+    return final_msg
+
+
 def main():
     """
     Sends messages to server and get responses
@@ -44,19 +63,7 @@ def main():
         while True:
             msg = input("Enter message: ")
             logging.debug("User input: " + msg)
-
-            final_msg = ''
-            for i in range(len(msg) - 2):
-                char = msg[i]
-                char_after_next = msg[i + 2]
-                if char == ' ' and char_after_next == ':':
-                    final_msg += '|'
-                else:
-                    final_msg += char
-            final_msg += msg[i+1]
-            final_msg += msg[i+2]
-
-            # msg = msg.replace(' ', SEPERATOR)
+            final_msg = fix_space(msg)
             my_socket.send(protocol_client_send(final_msg).encode())
             response = protocol.protocol_receive(my_socket)
             type1 = response[0]
